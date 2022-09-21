@@ -18,6 +18,7 @@
  */
 package org.apache.olingo.commons.api.edm;
 
+import org.apache.olingo.commons.api.Constants;
 import org.apache.olingo.commons.api.edm.geo.SRID;
 
 /**
@@ -93,12 +94,16 @@ public interface EdmProperty extends EdmElement, EdmMappable, EdmAnnotatable {
    *
    * @return XML prefix.
    */
-  String getXmlPrefix();
+  default String getXmlPrefix() {
+    return Constants.PREFIX_DATASERVICES;
+  }
 
   /**
    * Retrieve the XML namespace to use for this property, as applicable.
    *
    * @return XML namespace.
    */
-  String getXmlNamespace();
+  default String getXmlNamespace() {
+    return Constants.NS_DATASERVICES;
+  }
 }
