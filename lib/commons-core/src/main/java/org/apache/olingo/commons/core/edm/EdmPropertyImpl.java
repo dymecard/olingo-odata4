@@ -27,16 +27,18 @@ import org.apache.olingo.commons.api.edm.geo.SRID;
 import org.apache.olingo.commons.api.edm.provider.CsdlProperty;
 
 public class EdmPropertyImpl extends AbstractEdmNamed implements EdmProperty {
-
   private final CsdlProperty property;
   private EdmTypeInfo typeInfo;
   private EdmType propertyType;
+  private String prefix;
+  private String namespace;
+
 
   public EdmPropertyImpl(final Edm edm, final CsdlProperty property) {
     super(edm, property.getName(), property);
-
     this.property = property;
-
+    this.prefix = property.getPrefix();
+    this.namespace = property.getNamespace();
   }
 
   @Override
@@ -145,5 +147,15 @@ public class EdmPropertyImpl extends AbstractEdmNamed implements EdmProperty {
       buildTypeInfo();
     }
     return typeInfo.isPrimitiveType();
+  }
+
+  @Override
+  public String getXmlPrefix() {
+    return prefix;
+  }
+
+  @Override
+  public String getXmlNamespace() {
+    return namespace;
   }
 }

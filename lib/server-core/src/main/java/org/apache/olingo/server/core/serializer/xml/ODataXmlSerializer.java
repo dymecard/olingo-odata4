@@ -790,7 +790,23 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
       final String xml10InvalidCharReplacement, final XMLStreamWriter writer, 
       Set<List<String>> expandedPaths, Linked linked, ExpandOption expand)
       throws XMLStreamException, SerializerException {
-    writer.writeStartElement(property.getPrefix(), edmProperty.getName(), property.getNamespace());
+    String prefix = null;
+    String namespace = null;
+    if (property != null) {
+      prefix = property.getPrefix();
+      namespace = property.getNamespace();
+    }
+    if (prefix == null || namespace == null) {
+      prefix = edmProperty.getXmlPrefix();
+      namespace = edmProperty.getXmlNamespace();
+    }
+    if (prefix == null) {
+      prefix = DATA;
+    }
+    if (namespace == null) {
+      prefix = NS_DATA;
+    }
+    writer.writeStartElement(prefix, edmProperty.getName(), namespace);
     if (property == null || property.isNull()) {
       if (edmProperty.isNullable()) {
         writer.writeAttribute(METADATA, NS_METADATA, Constants.ATTR_NULL, "true");

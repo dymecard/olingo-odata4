@@ -87,4 +87,18 @@ public interface EdmProperty extends EdmElement, EdmMappable, EdmAnnotatable {
    * @return {@link EdmType}
    */
   EdmType getTypeWithAnnotations();
+
+  /**
+   * Retrieve the XML property prefix to use for this property.
+   *
+   * @return XML prefix.
+   */
+  String getXmlPrefix();
+
+  /**
+   * Retrieve the XML namespace to use for this property, as applicable.
+   *
+   * @return XML namespace.
+   */
+  String getXmlNamespace();
 }

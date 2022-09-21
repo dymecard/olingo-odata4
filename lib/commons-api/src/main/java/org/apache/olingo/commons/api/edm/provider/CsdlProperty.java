@@ -58,6 +58,10 @@ public class CsdlProperty extends CsdlAbstractEdmItem implements CsdlNamed, Csdl
 
   private List<CsdlAnnotation> annotations = new ArrayList<CsdlAnnotation>();
 
+  private String prefix;
+
+  private String namespace;
+
   @Override
   public String getName() {
     return name;
@@ -347,5 +351,41 @@ public class CsdlProperty extends CsdlAbstractEdmItem implements CsdlNamed, Csdl
    */
   public SRID getSrid() {
     return srid;
+  }
+
+  /**
+   * Gets XML prefix.
+   *
+   * @return the prefix.
+   */
+  public String getPrefix() {
+    return prefix;
+  }
+
+  /**
+   * Sets XML prefix.
+   *
+   * @param prefix the prefix to use for this property's name.
+   */
+  public void setPrefix(String prefix) {
+    this.prefix = prefix;
+  }
+
+  /**
+   * Gets the XML namespace.
+   *
+   * @return XML namespace for this property.
+   */
+  public String getNamespace() {
+    return namespace;
+  }
+
+  /**
+   * Sets the XML namespace.
+   *
+   * @param namespace XML namespace for this property.
+   */
+  public void setNamespace(String namespace) {
+    this.namespace = namespace;
   }
 }
