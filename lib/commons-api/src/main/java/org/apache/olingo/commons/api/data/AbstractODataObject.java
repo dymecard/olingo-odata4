@@ -19,6 +19,8 @@
 package org.apache.olingo.commons.api.data;
 
 import java.net.URI;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Abstract OData object with basic values (<code>id</code>, <code>baseURI</code>, <code>title</code>).
@@ -28,6 +30,23 @@ public abstract class AbstractODataObject extends Annotatable {
   private URI baseURI;
   private URI id;
   private String title;
+  private List<CustomNamespace> customNamespaces = Collections.emptyList();
+
+  /**
+   * Add a custom XML namespace to this object.
+   * @param customNamespace custom XML namespace
+   */
+  public void addCustomNamespace(final CustomNamespace customNamespace) {
+    customNamespaces.add(customNamespace);
+  }
+
+  /**
+   * Retrieve the list of custom namespaces attached to this object, if any.
+   * @return custom namespaces.
+   */
+  public List<CustomNamespace> getCustomNamespaces() {
+    return customNamespaces;
+  }
 
   /**
    * Gets base URI.

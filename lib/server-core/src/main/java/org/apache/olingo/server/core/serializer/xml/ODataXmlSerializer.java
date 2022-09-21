@@ -32,16 +32,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.olingo.commons.api.Constants;
-import org.apache.olingo.commons.api.data.AbstractEntityCollection;
-import org.apache.olingo.commons.api.data.ComplexValue;
-import org.apache.olingo.commons.api.data.ContextURL;
-import org.apache.olingo.commons.api.data.Entity;
-import org.apache.olingo.commons.api.data.EntityCollection;
-import org.apache.olingo.commons.api.data.EntityIterator;
-import org.apache.olingo.commons.api.data.Link;
-import org.apache.olingo.commons.api.data.Linked;
-import org.apache.olingo.commons.api.data.Operation;
-import org.apache.olingo.commons.api.data.Property;
+import org.apache.olingo.commons.api.data.*;
 import org.apache.olingo.commons.api.edm.EdmComplexType;
 import org.apache.olingo.commons.api.edm.EdmEntitySet;
 import org.apache.olingo.commons.api.edm.EdmEntityType;
@@ -214,6 +205,26 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
     }
   }
 
+  private void expressXmlNamespaces(
+          final AbstractODataObject object,
+          final XMLStreamWriter writer,
+          boolean needsDataNamespace) throws XMLStreamException {
+    writer.writeNamespace(ATOM, NS_ATOM);
+    writer.writeNamespace(METADATA, NS_METADATA);
+    if (needsDataNamespace) {
+      writer.writeNamespace(DATA, NS_DATA);
+    }
+
+    if (object != null) {
+      final List<CustomNamespace> customNamespaces = object.getCustomNamespaces();
+      if (!customNamespaces.isEmpty()) {
+        for (final CustomNamespace customNamespace : customNamespaces) {
+          writer.writeNamespace(customNamespace.getPrefix(), customNamespace.getUri());
+        }
+      }
+    }
+  }
+
   @Override
   public SerializerResult entityCollection(final ServiceMetadata metadata,
       final EdmEntityType entityType, final AbstractEntityCollection entitySet,
@@ -235,10 +246,7 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
       XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter(outputStream, DEFAULT_CHARSET);
       writer.writeStartDocument(DEFAULT_CHARSET, "1.0");
       writer.writeStartElement(ATOM, Constants.ATOM_ELEM_FEED, NS_ATOM);
-      writer.writeNamespace(ATOM, NS_ATOM);
-      writer.writeNamespace(METADATA, NS_METADATA);
-      writer.writeNamespace(DATA, NS_DATA);
-
+      expressXmlNamespaces(entitySet, writer, true);
       writer.writeAttribute(METADATA, NS_METADATA, Constants.CONTEXT,
           ContextURLBuilder.create(contextURL).toASCIIString());
       writeMetadataETag(metadata, writer);
@@ -297,9 +305,7 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
       XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter(outputStream, DEFAULT_CHARSET);
       writer.writeStartDocument(DEFAULT_CHARSET, "1.0");
       writer.writeStartElement(ATOM, Constants.ATOM_ELEM_FEED, NS_ATOM);
-      writer.writeNamespace(ATOM, NS_ATOM);
-      writer.writeNamespace(METADATA, NS_METADATA);
-      writer.writeNamespace(DATA, NS_DATA);
+      expressXmlNamespaces(entitySet, writer, true);
 
       writer.writeAttribute(METADATA, NS_METADATA, Constants.CONTEXT,
           ContextURLBuilder.create(contextURL).toASCIIString());
@@ -459,9 +465,7 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
     try {
       writer.writeStartElement(ATOM, Constants.ATOM_ELEM_ENTRY, NS_ATOM);
       if (top) {
-        writer.writeNamespace(ATOM, NS_ATOM);
-        writer.writeNamespace(METADATA, NS_METADATA);
-        writer.writeNamespace(DATA, NS_DATA);
+        expressXmlNamespaces(entity, writer, true);
   
         if (contextURL != null) { // top-level entity
           writer.writeAttribute(METADATA, NS_METADATA, Constants.CONTEXT,
@@ -786,7 +790,7 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
       final String xml10InvalidCharReplacement, final XMLStreamWriter writer, 
       Set<List<String>> expandedPaths, Linked linked, ExpandOption expand)
       throws XMLStreamException, SerializerException {
-    writer.writeStartElement(DATA, edmProperty.getName(), NS_DATA);
+    writer.writeStartElement(property.getPrefix(), edmProperty.getName(), property.getNamespace());
     if (property == null || property.isNull()) {
       if (edmProperty.isNullable()) {
         writer.writeAttribute(METADATA, NS_METADATA, Constants.ATTR_NULL, "true");
@@ -1119,9 +1123,7 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
       XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter(outputStream, DEFAULT_CHARSET);
       writer.writeStartDocument(DEFAULT_CHARSET, "1.0");
       writer.writeStartElement(METADATA, Constants.VALUE, NS_METADATA);
-      writer.writeNamespace(METADATA, NS_METADATA);
-      writer.writeNamespace(DATA, NS_DATA);
-      writer.writeNamespace(ATOM, NS_ATOM);
+      expressXmlNamespaces(null, writer, true);
       writer.writeAttribute(METADATA, NS_METADATA, Constants.ATTR_TYPE,
           "#" + resolvedType.getFullQualifiedName().getFullQualifiedNameAsString());
       writer.writeAttribute(METADATA, NS_METADATA, Constants.CONTEXT,
@@ -1222,9 +1224,7 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
       XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter(outputStream, DEFAULT_CHARSET);
       writer.writeStartDocument(DEFAULT_CHARSET, "1.0");
       writer.writeStartElement(METADATA, Constants.VALUE, NS_METADATA);
-      writer.writeNamespace(METADATA, NS_METADATA);
-      writer.writeNamespace(DATA, NS_DATA);
-      writer.writeNamespace(ATOM, NS_ATOM);
+      expressXmlNamespaces(null, writer, true);
       writer.writeAttribute(METADATA, NS_METADATA, Constants.ATTR_TYPE, collectionType(type));
       writer.writeAttribute(METADATA, NS_METADATA, Constants.CONTEXT,
           ContextURLBuilder.create(contextURL).toASCIIString());
@@ -1329,8 +1329,7 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
       XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter(outputStream, DEFAULT_CHARSET);
       writer.writeStartDocument(DEFAULT_CHARSET, "1.0");
       writer.writeStartElement(ATOM, Constants.ATOM_ELEM_FEED, NS_ATOM);
-      writer.writeNamespace(ATOM, NS_ATOM);
-      writer.writeNamespace(METADATA, NS_METADATA);
+      expressXmlNamespaces(null, writer, false);
       if (options != null && options.getContextURL() != null) { // top-level entity
         writer.writeAttribute(METADATA, NS_METADATA, Constants.CONTEXT,
             ContextURLBuilder.create(options.getContextURL()).toASCIIString());
