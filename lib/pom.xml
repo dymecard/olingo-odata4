@@ -30,7 +30,7 @@
   <parent>
     <groupId>org.apache.olingo</groupId>
     <artifactId>odata-parent</artifactId>
-    <version>4.11.5-pxm-SNAPSHOT</version>
+    <version>4.12.0-pxm-SNAPSHOT</version>
     <relativePath>..</relativePath>
   </parent>
 
