@@ -60,8 +60,12 @@ public final class CustomNamespace {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         CustomNamespace that = (CustomNamespace) o;
         return Objects.equals(prefix, that.prefix) && Objects.equals(uri, that.uri);
     }
