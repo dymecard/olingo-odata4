@@ -25,7 +25,7 @@
 	<groupId>my.group.id</groupId>
 	<artifactId>DemoService-ActionPreparation</artifactId>
 	<packaging>war</packaging>
-	<version>4.11.0-pxm-SNAPSHOT</version>
+	<version>4.11.1-pxm-SNAPSHOT</version>
 
 	<name>${project.artifactId}-Webapp</name>
 
