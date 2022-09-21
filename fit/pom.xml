@@ -249,23 +249,6 @@
       </plugin>
 
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cobertura-maven-plugin</artifactId>
-        <configuration>
-          <skip>${cobertura.skip}</skip>
-          <instrumentation>
-            <excludes>
-              <exclude>org/apache/olingo/**/tecsvc/**/*.class</exclude>
-              <exclude>org/apache/olingo/**/fit/**/*.class</exclude>
-              <exclude>org/apache/olingo/**/testutil/**/*.class</exclude>
-            </excludes>
-          </instrumentation>
-          <check/>
-          <aggregate>true</aggregate>
-        </configuration>
-      </plugin>
-
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
         <configuration>
