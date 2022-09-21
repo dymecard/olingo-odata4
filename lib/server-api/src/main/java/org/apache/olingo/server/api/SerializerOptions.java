@@ -32,6 +32,15 @@ public interface SerializerOptions {
     }
 
     /**
+     * Whether to include non-standard property prefixes in JSON responses.
+     *
+     * @return Whether to include such prefixes.
+     */
+    default boolean getJsonPropertyPrefixing() {
+        return false;
+    }
+
+    /**
      * Return a default set of serializer options.
      *
      * @return Default serializer options.

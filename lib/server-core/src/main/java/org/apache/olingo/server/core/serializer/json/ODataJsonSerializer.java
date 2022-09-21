@@ -699,9 +699,23 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
 	
 	instanceAnnotSerializer.writeInstanceAnnotationsOnProperties(edmProperty, property, json);
     boolean isStreamProperty = isStreamProperty(edmProperty);
+    SerializerOptions serializerOptions = metadata == null
+            ? SerializerOptions.defaults()
+            : metadata.getSerializerOptions();
 
-    SerializerOptions serializerOptions = metadata == null ? null : metadata.getSerializerOptions();
-    if (!isStreamProperty && serializerOptions != null) {
+    String prefix = null;
+    boolean includePrefix = false;
+    if (property != null) {
+      prefix = property.getPrefix();
+    }
+    if (prefix == null) {
+      prefix = edmProperty.getXmlPrefix();
+    }
+    if (prefix != null && !prefix.equals("d")) {
+      // it's a non standard prefix, and therefore is eligible for prefixing.
+      includePrefix = serializerOptions.getJsonPropertyPrefixing();
+    }
+    if (!isStreamProperty) {
       boolean isNull = property == null || property.isNull();
       boolean isEmpty = property == null || property.isPrimitive() && (
         "Edm.String".equals(property.getType()) && "".equals(property.getValue())
@@ -722,7 +736,13 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
 
     writePropertyType(edmProperty, json);
     if (!isStreamProperty) {
-      json.writeFieldName(edmProperty.getName());
+      final String effectivePropName;
+      if (includePrefix) {
+        effectivePropName = prefix + ":" + edmProperty.getName();
+      } else {
+        effectivePropName = edmProperty.getName();
+      }
+      json.writeFieldName(effectivePropName);
     }
     if (property == null || property.isNull()) {
       if (edmProperty.isNullable() == Boolean.FALSE && !isStreamProperty) {
