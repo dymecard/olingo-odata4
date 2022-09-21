@@ -49,23 +49,22 @@ public enum SerializerInclude {
      * @param isNull should be `true` if the value to be enforced is `null` or equivalent.
      * @param isEmpty should be `true` if the value to be enforced is an empty string or equivalent.
      * @param isDefault should be `true` if the value to be enforced is equal to its default value.
-     * @return Whether the value should be included (`true` for yes, `false` for no).
+     * @return Whether the value should be excluded (`true` for yes, `false` for no).
      */
-    public boolean shouldInclude(boolean isNull, boolean isEmpty, boolean isDefault) {
+    public boolean shouldExclude(boolean isNull, boolean isEmpty, boolean isDefault) {
         if (this == ALL) {
-            return true;
-        }
-        if (isNull) {
             return false;
         }
+        if (isNull) {
+            return true;
+        }
         if (this != NOT_NULL) {
-            if (isEmpty) {
-                return false;
-            }
-            if (this != NOT_NULL_AND_NOT_EMPTY) {
-                return isDefault;
+            if (this == NOT_NULL_AND_NOT_EMPTY) {
+                return isEmpty;
+            } else {
+                return isEmpty || isDefault;
             }
         }
-        return true;
+        return false;
     }
 }

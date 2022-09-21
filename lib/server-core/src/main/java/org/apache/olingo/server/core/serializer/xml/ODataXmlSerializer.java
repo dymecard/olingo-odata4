@@ -863,14 +863,16 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
     if (serializerOptions != null) {
       boolean isNull = property == null || property.isNull();
       boolean isEmpty = property == null || property.isPrimitive() && (
-          "Edm.String".equals(property.getType()) && "".equals(property.getValue())
+        ("Edm.String".equals(property.getType()) && "".equals(property.getValue())) ||
+        ("Edm.Boolean".equals(property.getType()) && property.getValue().equals(false))
       );
-      boolean isDefault = property == null || (
-        property.isPrimitive() && (edmProperty != null && edmProperty.getDefaultValue() != null && (
-            edmProperty.getDefaultValue().equals(property.getValue())
-        ))
-      );
-      if (!serializerOptions.getInclude().shouldInclude(
+      boolean isDefault = isNull || isEmpty;
+      if (!isDefault && property.isPrimitive()) {
+        if (edmProperty.getDefaultValue() != null) {
+          isDefault = edmProperty.getDefaultValue().equals(property.getValue());
+        }
+      }
+      if (serializerOptions.getInclude().shouldExclude(
               isNull,
               isEmpty,
               isDefault)) {
