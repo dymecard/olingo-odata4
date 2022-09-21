@@ -19,7 +19,7 @@
 package org.apache.olingo.commons.api.data;
 
 import java.net.URI;
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -30,7 +30,7 @@ public abstract class AbstractODataObject extends Annotatable {
   private URI baseURI;
   private URI id;
   private String title;
-  private List<CustomNamespace> customNamespaces = Collections.emptyList();
+  private List<CustomNamespace> customNamespaces = new LinkedList<>();
 
   /**
    * Add a custom XML namespace to this object.
