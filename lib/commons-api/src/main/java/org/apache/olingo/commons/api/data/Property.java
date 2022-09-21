@@ -18,6 +18,8 @@
  */
 package org.apache.olingo.commons.api.data;
 
+import org.apache.olingo.commons.api.Constants;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,14 +27,21 @@ import java.util.List;
  * Data representation for a property.
  */
 public class Property extends Valuable {
+  private static final String DEFAULT_PREFIX = Constants.PREFIX_DATASERVICES;
+  private static final String DEFAULT_NAMESPACE = Constants.NS_DATASERVICES;
 
   private String name;
+  private String prefix;
+  private String namespace;
   private final List<Operation> operations = new ArrayList<Operation>();
   
   /**
    * Creates a new property
    */
-  public Property() {}
+  public Property() {
+    this.prefix = DEFAULT_PREFIX;
+    this.namespace = DEFAULT_NAMESPACE;
+  }
   
   /**
    * Creates a new property
@@ -42,6 +51,22 @@ public class Property extends Valuable {
    */
   public Property(final String type, final String name) {
     this.name = name;
+    this.prefix = DEFAULT_PREFIX;
+    this.namespace = DEFAULT_NAMESPACE;
+    super.setType(type);
+  }
+
+  /**
+   * Creates a new property with a custom type prefix and namespace
+   *
+   * @param prefix Prefix for the type
+   * @param type   String representation of type (can be null)
+   * @param name   Name of the property
+   */
+  public Property(final String prefix, final String namespace, final String type, final String name) {
+    this.name = name;
+    this.prefix = prefix;
+    this.namespace = namespace;
     super.setType(type);
   }
   
@@ -59,6 +84,42 @@ public class Property extends Valuable {
   }
 
   /**
+   * Creates a new property
+   *
+   * @param type        String representation of type (can be null)
+   * @param namespace   URI namespace for this property.
+   * @param name        Name of the property
+   * @param valueType   Kind of the property e.g. primitive property, complex property
+   * @param value       Value of the property.
+   */
+  public Property(
+          final String prefix,
+          final String type,
+          final String namespace,
+          final String name,
+          final ValueType valueType,
+          final Object value) {
+    this(prefix, namespace, type, name);
+    setValue(valueType, value);
+  }
+
+  /**
+   * Get the property name prefix to use when serializing to XML.
+   * @return prefix for property.
+   */
+  public String getPrefix() {
+    return prefix;
+  }
+
+  /**
+   * Get the XML namespace to use for this property when serializing to XML.
+   * @return namespace for property.
+   */
+  public String getNamespace() {
+    return namespace;
+  }
+
+  /**
    * Get name of property.
    * @return name of property
    */
@@ -72,6 +133,22 @@ public class Property extends Valuable {
    */
   public void setName(final String name) {
     this.name = name;
+  }
+
+  /**
+   * Set the prefix to use when serializing to XML.
+   * @param prefix prefix value to use.
+   */
+  public void setPrefix(final String prefix) {
+    this.prefix = prefix;
+  }
+
+  /**
+   * Set the XML namespace to use when serializing to XML.
+   * @param namespace namespace URI to use.
+   */
+  public void setNamespace(final String namespace) {
+    this.namespace = namespace;
   }
 
   /**
