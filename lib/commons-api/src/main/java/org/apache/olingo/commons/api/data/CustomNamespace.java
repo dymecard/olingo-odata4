@@ -18,6 +18,8 @@
  */
 package org.apache.olingo.commons.api.data;
 
+import java.util.Objects;
+
 /**
  * Describes a custom XML namespace.
  */
@@ -54,5 +56,18 @@ public final class CustomNamespace {
      */
     public String getUri() {
         return uri;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CustomNamespace that = (CustomNamespace) o;
+        return Objects.equals(prefix, that.prefix) && Objects.equals(uri, that.uri);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(prefix, uri);
     }
 }
