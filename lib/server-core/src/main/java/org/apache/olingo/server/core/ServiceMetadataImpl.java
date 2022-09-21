@@ -21,7 +21,10 @@ package org.apache.olingo.server.core;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.olingo.commons.api.data.CustomNamespace;
 import org.apache.olingo.commons.api.edm.Edm;
 import org.apache.olingo.commons.api.edm.constants.ODataServiceVersion;
@@ -41,6 +44,8 @@ public class ServiceMetadataImpl implements ServiceMetadata {
   private final ServiceMetadataETagSupport serviceMetadataETagSupport;
   private final List<CustomNamespace> customNamespaces;
   private SerializerOptions serializerOptions;
+  private Supplier<ObjectMapper> jsonMapperSupplier;
+  private Supplier<JsonFactory> jsonFactorySupplier;
 
   public ServiceMetadataImpl(final CsdlEdmProvider edmProvider, final List<EdmxReference> references,
       final ServiceMetadataETagSupport serviceMetadataETagSupport) {
@@ -50,6 +55,8 @@ public class ServiceMetadataImpl implements ServiceMetadata {
     this.serviceMetadataETagSupport = serviceMetadataETagSupport;
     this.customNamespaces = new ArrayList<>();
     this.serializerOptions = SerializerOptions.defaults();
+    this.jsonMapperSupplier = ObjectMapper::new;
+    this.jsonFactorySupplier = () -> new JsonFactory(this.jsonMapperSupplier.get());
   }
 
   @Override
@@ -90,5 +97,25 @@ public class ServiceMetadataImpl implements ServiceMetadata {
   @Override
   public void setSerializerOptions(final SerializerOptions options) {
     this.serializerOptions = options;
+  }
+
+  @Override
+  public ObjectMapper getJsonMapper() {
+    return this.jsonMapperSupplier.get();
+  }
+
+  @Override
+  public void setJsonMapperSupplier(Supplier<ObjectMapper> mapperFactory) {
+    this.jsonMapperSupplier = mapperFactory;
+  }
+
+  @Override
+  public JsonFactory getJsonFactory() {
+    return this.jsonFactorySupplier.get();
+  }
+
+  @Override
+  public void setJsonFactorySupplier(Supplier<JsonFactory> factorySupplier) {
+    this.jsonFactorySupplier = factorySupplier;
   }
 }

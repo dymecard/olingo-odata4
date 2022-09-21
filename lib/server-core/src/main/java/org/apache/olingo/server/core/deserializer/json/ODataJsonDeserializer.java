@@ -342,7 +342,8 @@ public class ODataJsonDeserializer implements ODataDeserializer {
   }
 
   private ObjectNode parseJsonTree(final InputStream stream) throws IOException, DeserializerException {
-    ObjectMapper objectMapper = new ObjectMapper();
+    ObjectMapper objectMapper = this.serviceMetadata != null
+            ? this.serviceMetadata.getJsonMapper() : new ObjectMapper();
     objectMapper.configure(DeserializationFeature.FAIL_ON_READING_DUP_TREE_KEY, true);
     objectMapper.configure(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS, true);
     JsonParser parser = new JsonFactory(objectMapper).createParser(stream);
@@ -422,7 +423,9 @@ public class ODataJsonDeserializer implements ODataDeserializer {
   /** Reads a parameter value from a String. */
   public Parameter parameter(final String content, final EdmParameter parameter) throws DeserializerException {
     try {
-      JsonParser parser = new JsonFactory(new ObjectMapper()
+      ObjectMapper objectMapper = this.serviceMetadata != null
+              ? this.serviceMetadata.getJsonMapper() : new ObjectMapper();
+      JsonParser parser = new JsonFactory(objectMapper
           .configure(DeserializationFeature.FAIL_ON_READING_DUP_TREE_KEY, true))
               .createParser(content);
       JsonNode node = parser.getCodec().readTree(parser);

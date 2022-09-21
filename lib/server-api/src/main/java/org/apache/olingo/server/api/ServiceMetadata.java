@@ -18,8 +18,12 @@
  */
 package org.apache.olingo.server.api;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.olingo.commons.api.data.CustomNamespace;
 import org.apache.olingo.commons.api.edm.Edm;
 import org.apache.olingo.commons.api.edm.constants.ODataServiceVersion;
@@ -58,23 +62,63 @@ public interface ServiceMetadata {
    * Gets any specified serializer options, or a set of sensible defaults.
    * @return global serializer options.
    */
-  SerializerOptions getSerializerOptions();
+  default SerializerOptions getSerializerOptions() {
+    return SerializerOptions.defaults();
+  }
 
   /**
    * Gets any custom namespaces which should be present on the service metadata document.
    * @return custom namespaces.
    */
-  List<CustomNamespace> getCustomNamespaces();
+  default List<CustomNamespace> getCustomNamespaces() {
+    return Collections.emptyList();
+  }
 
   /**
    * Add a custom namespace to this service metadata payload.
    * @param customNamespace custom namespace to add.
    */
-  void addCustomNamespace(CustomNamespace customNamespace);
+  default void addCustomNamespace(CustomNamespace customNamespace) {
+    // no-op
+  }
 
   /**
    * Set custom serializer options.
    * @param options custom options.
    */
-  void setSerializerOptions(SerializerOptions options);
+  default void setSerializerOptions(SerializerOptions options) {
+    // no-op
+  }
+
+  /**
+   * Retrieve a JSON mapper for use in de-serialization.
+   * @return JSON mapper.
+   */
+  default ObjectMapper getJsonMapper() {
+    return new ObjectMapper();
+  }
+
+  /**
+   * Retrieve a JSON factory for use in serialization.
+   * @return JSON factory.
+   */
+  default JsonFactory getJsonFactory() {
+    return new JsonFactory(getJsonMapper());
+  }
+
+  /**
+   * Set the factory method to use for acquiring a JSON serializer.
+   * @param mapperFactory mapper factory to use.
+   */
+  default void setJsonMapperSupplier(Supplier<ObjectMapper> mapperFactory) {
+    // no-op
+  }
+
+  /**
+   * Set the factory method to use for acquiring a JSON serializer.
+   * @param mapperFactory mapper factory to use.
+   */
+  default void setJsonFactorySupplier(Supplier<JsonFactory> mapperFactory) {
+    // no-op
+  }
 }

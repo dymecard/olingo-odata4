@@ -133,6 +133,19 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
     instanceAnnotSerializer = new ODataJsonInstanceAnnotationSerializer(contentType, constants);
   }
 
+  private JsonFactory acquireJsonFactory(final ServiceMetadata serviceMetadata) {
+    JsonFactory resolved;
+    if (serviceMetadata == null) {
+      resolved = new JsonFactory();
+    } else {
+      resolved = serviceMetadata.getJsonFactory();
+      if (resolved == null) {
+        resolved = new JsonFactory();
+      }
+    }
+    return resolved;
+  }
+
   @Override
   public SerializerResult serviceDocument(final ServiceMetadata metadata, final String serviceRoot)
       throws SerializerException {
@@ -141,7 +154,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
 
     CircleStreamBuffer buffer = new CircleStreamBuffer();
     outputStream = buffer.getOutputStream();
-    try (JsonGenerator json = new JsonFactory().createGenerator(outputStream)) {
+    try (JsonGenerator json = acquireJsonFactory(metadata).createGenerator(outputStream)) {
       new ServiceDocumentJsonSerializer(metadata, serviceRoot, isODataMetadataNone).writeServiceDocument(json);
 
       json.close();
@@ -160,10 +173,9 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
     OutputStream outputStream = null;
     SerializerException cachedException = null;
 
-    
     CircleStreamBuffer buffer = new CircleStreamBuffer();
     outputStream = buffer.getOutputStream();
-    try (JsonGenerator json = new JsonFactory().createGenerator(outputStream)) {
+    try (JsonGenerator json = acquireJsonFactory(serviceMetadata).createGenerator(outputStream)) {
       new MetadataDocumentJsonSerializer(serviceMetadata).writeMetadataDocument(json);
       json.close();
       return SerializerResultImpl.with().content(buffer.getInputStream()).build();
@@ -207,7 +219,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
     
     CircleStreamBuffer buffer = new CircleStreamBuffer();
     outputStream = buffer.getOutputStream();
-    try (JsonGenerator json = new JsonFactory().createGenerator(outputStream)) {
+    try (JsonGenerator json = acquireJsonFactory(metadata).createGenerator(outputStream)) {
       json.writeStartObject();
 
       final ContextURL contextURL = checkContextURL(options == null ? null : options.getContextURL());
@@ -256,7 +268,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
     SerializerException cachedException;
     boolean pagination = false;
     try {
-      JsonGenerator json = new JsonFactory().createGenerator(outputStream);
+      JsonGenerator json = acquireJsonFactory(metadata).createGenerator(outputStream);
       json.writeStartObject();
 
       final ContextURL contextURL = checkContextURL(options == null ? null : options.getContextURL());
@@ -295,7 +307,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
     final ContextURL contextURL = checkContextURL(options == null ? null : options.getContextURL());
     CircleStreamBuffer buffer = new CircleStreamBuffer();
     outputStream = buffer.getOutputStream();
-    try (JsonGenerator json = new JsonFactory().createGenerator(outputStream)) {
+    try (JsonGenerator json = acquireJsonFactory(metadata).createGenerator(outputStream)) {
       String name =  contextURL == null ? null:contextURL.getEntitySetOrSingletonOrType();
       writeEntity(metadata, entityType, entity, contextURL,
           options == null ? null : options.getExpand(),
@@ -1112,7 +1124,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
     final ContextURL contextURL = checkContextURL(options == null ? null : options.getContextURL());
     CircleStreamBuffer buffer = new CircleStreamBuffer();
     outputStream = buffer.getOutputStream();
-    try (JsonGenerator json = new JsonFactory().createGenerator(outputStream)) {
+    try (JsonGenerator json = acquireJsonFactory(metadata).createGenerator(outputStream)) {
       json.writeStartObject();
       writeContextURL(contextURL, json);
       writeMetadataETag(metadata, json);
@@ -1157,7 +1169,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
         contextURL.getEntitySetOrSingletonOrType();
       CircleStreamBuffer buffer = new CircleStreamBuffer();
       outputStream = buffer.getOutputStream();
-      JsonGenerator json = new JsonFactory().createGenerator(outputStream);
+      JsonGenerator json = acquireJsonFactory(metadata).createGenerator(outputStream);
       json.writeStartObject();
       writeContextURL(contextURL, json);
       writeMetadataETag(metadata, json);      
@@ -1212,7 +1224,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
     final ContextURL contextURL = checkContextURL(options == null ? null : options.getContextURL());
     CircleStreamBuffer buffer = new CircleStreamBuffer();
     outputStream = buffer.getOutputStream();
-    try (JsonGenerator json = new JsonFactory().createGenerator(outputStream)) {
+    try (JsonGenerator json = acquireJsonFactory(metadata).createGenerator(outputStream)) {
       json.writeStartObject();
       writeContextURL(contextURL, json);
       writeMetadataETag(metadata, json);
@@ -1250,7 +1262,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
     final ContextURL contextURL = checkContextURL(options == null ? null : options.getContextURL());
     CircleStreamBuffer buffer = new CircleStreamBuffer();
     outputStream = buffer.getOutputStream();
-    try (JsonGenerator json = new JsonFactory().createGenerator(outputStream)) {
+    try (JsonGenerator json = acquireJsonFactory(metadata).createGenerator(outputStream)) {
       json.writeStartObject();
       writeContextURL(contextURL, json);
       writeMetadataETag(metadata, json);
@@ -1296,7 +1308,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
     CircleStreamBuffer buffer = new CircleStreamBuffer();
     final UriHelper uriHelper = new UriHelperImpl();
     outputStream = buffer.getOutputStream();
-    try (final JsonGenerator json = new JsonFactory().createGenerator(outputStream)) {
+    try (final JsonGenerator json = acquireJsonFactory(metadata).createGenerator(outputStream)) {
 
       json.writeStartObject();
       writeContextURL(contextURL, json);
@@ -1326,7 +1338,7 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
     CircleStreamBuffer buffer = new CircleStreamBuffer();
     final UriHelper uriHelper = new UriHelperImpl();
     outputStream = buffer.getOutputStream();
-    try (final JsonGenerator json = new JsonFactory().createGenerator(outputStream)) {
+    try (final JsonGenerator json = acquireJsonFactory(metadata).createGenerator(outputStream)) {
       json.writeStartObject();
 
       writeContextURL(contextURL, json);
