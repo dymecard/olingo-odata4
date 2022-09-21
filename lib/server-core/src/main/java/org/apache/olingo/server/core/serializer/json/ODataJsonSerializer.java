@@ -67,6 +67,7 @@ import org.apache.olingo.commons.api.edm.geo.SRID;
 import org.apache.olingo.commons.api.format.ContentType;
 import org.apache.olingo.commons.core.edm.primitivetype.EdmPrimitiveTypeFactory;
 import org.apache.olingo.server.api.ODataServerError;
+import org.apache.olingo.server.api.SerializerOptions;
 import org.apache.olingo.server.api.ServiceMetadata;
 import org.apache.olingo.server.api.serializer.ComplexSerializerOptions;
 import org.apache.olingo.server.api.serializer.EntityCollectionSerializerOptions;
@@ -698,6 +699,27 @@ public class ODataJsonSerializer extends AbstractODataSerializer {
 	
 	instanceAnnotSerializer.writeInstanceAnnotationsOnProperties(edmProperty, property, json);
     boolean isStreamProperty = isStreamProperty(edmProperty);
+
+    SerializerOptions serializerOptions = metadata == null ? null : metadata.getSerializerOptions();
+    if (!isStreamProperty && serializerOptions != null) {
+      boolean isNull = property == null || property.isNull();
+      boolean isEmpty = property == null || property.isPrimitive() && (
+        "Edm.String".equals(property.getType()) && "".equals(property.getValue())
+      );
+      boolean isDefault = property == null || (
+        property.isPrimitive() && (edmProperty != null && edmProperty.getDefaultValue() != null && (
+          edmProperty.getDefaultValue().equals(property.getValue())
+        ))
+      );
+      if (!serializerOptions.getInclude().shouldInclude(
+              isNull,
+              isEmpty,
+              isDefault)) {
+        // exit early: should not include this property on the basis of the serializer's inclusion policy
+        return;
+      }
+    }
+
     writePropertyType(edmProperty, json);
     if (!isStreamProperty) {
       json.writeFieldName(edmProperty.getName());
