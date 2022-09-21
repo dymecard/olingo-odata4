@@ -20,6 +20,7 @@ package org.apache.olingo.server.api;
 
 import java.util.List;
 
+import org.apache.olingo.commons.api.data.CustomNamespace;
 import org.apache.olingo.commons.api.edm.Edm;
 import org.apache.olingo.commons.api.edm.constants.ODataServiceVersion;
 import org.apache.olingo.commons.api.edmx.EdmxReference;
@@ -58,4 +59,22 @@ public interface ServiceMetadata {
    * @return global serializer options.
    */
   SerializerOptions getSerializerOptions();
+
+  /**
+   * Gets any custom namespaces which should be present on the service metadata document.
+   * @return custom namespaces.
+   */
+  List<CustomNamespace> getCustomNamespaces();
+
+  /**
+   * Add a custom namespace to this service metadata payload.
+   * @param customNamespace custom namespace to add.
+   */
+  void addCustomNamespace(CustomNamespace customNamespace);
+
+  /**
+   * Set custom serializer options.
+   * @param options custom options.
+   */
+  void setSerializerOptions(SerializerOptions options);
 }

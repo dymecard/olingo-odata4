@@ -22,11 +22,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.olingo.commons.api.data.CustomNamespace;
 import org.apache.olingo.commons.api.edm.Edm;
 import org.apache.olingo.commons.api.edm.constants.ODataServiceVersion;
 import org.apache.olingo.commons.api.edm.provider.CsdlEdmProvider;
 import org.apache.olingo.commons.api.edmx.EdmxReference;
 import org.apache.olingo.commons.core.edm.EdmProviderImpl;
+import org.apache.olingo.server.api.SerializerOptions;
 import org.apache.olingo.server.api.ServiceMetadata;
 import org.apache.olingo.server.api.etag.ServiceMetadataETagSupport;
 
@@ -37,6 +39,8 @@ public class ServiceMetadataImpl implements ServiceMetadata {
   private final Edm edm;
   private final List<EdmxReference> references;
   private final ServiceMetadataETagSupport serviceMetadataETagSupport;
+  private final List<CustomNamespace> customNamespaces;
+  private SerializerOptions serializerOptions;
 
   public ServiceMetadataImpl(final CsdlEdmProvider edmProvider, final List<EdmxReference> references,
       final ServiceMetadataETagSupport serviceMetadataETagSupport) {
@@ -44,6 +48,8 @@ public class ServiceMetadataImpl implements ServiceMetadata {
     this.references = new ArrayList<>();
     this.references.addAll(references);
     this.serviceMetadataETagSupport = serviceMetadataETagSupport;
+    this.customNamespaces = new ArrayList<>();
+    this.serializerOptions = SerializerOptions.defaults();
   }
 
   @Override
@@ -64,5 +70,25 @@ public class ServiceMetadataImpl implements ServiceMetadata {
   @Override
   public ServiceMetadataETagSupport getServiceMetadataETagSupport() {
     return serviceMetadataETagSupport;
+  }
+
+  @Override
+  public SerializerOptions getSerializerOptions() {
+    return this.serializerOptions;
+  }
+
+  @Override
+  public List<CustomNamespace> getCustomNamespaces() {
+    return this.customNamespaces;
+  }
+
+  @Override
+  public void addCustomNamespace(final CustomNamespace customNamespace) {
+    this.customNamespaces.add(customNamespace);
+  }
+
+  @Override
+  public void setSerializerOptions(final SerializerOptions options) {
+    this.serializerOptions = options;
   }
 }

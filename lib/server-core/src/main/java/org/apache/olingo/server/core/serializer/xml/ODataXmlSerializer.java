@@ -807,6 +807,25 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
     if (namespace == null) {
       namespace = NS_DATA;
     }
+    SerializerOptions serializerOptions = metadata == null ? null : metadata.getSerializerOptions();
+    if (serializerOptions != null) {
+      boolean isNull = property == null || property.isNull();
+      boolean isEmpty = property == null || property.isPrimitive() && (
+          "Edm.String".equals(property.getType()) && "".equals(property.getValue())
+      );
+      boolean isDefault = property == null || (
+        property.isPrimitive() && (edmProperty != null && edmProperty.getDefaultValue() != null && (
+            edmProperty.getDefaultValue().equals(property.getValue())
+        ))
+      );
+      if (!serializerOptions.getInclude().shouldInclude(
+              isNull,
+              isEmpty,
+              isDefault)) {
+        // exit early: should not include this property on the basis of the serializer's inclusion policy
+        return;
+      }
+    }
     writer.writeStartElement(prefix, edmProperty.getName(), namespace);
     if (property == null || property.isNull()) {
       if (edmProperty.isNullable()) {

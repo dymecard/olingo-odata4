@@ -22,6 +22,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.olingo.commons.api.Constants;
+import org.apache.olingo.commons.api.data.CustomNamespace;
 import org.apache.olingo.commons.api.edm.EdmEntityContainer;
 import org.apache.olingo.commons.api.edm.EdmEntitySet;
 import org.apache.olingo.commons.api.edm.EdmFunctionImport;
@@ -30,6 +31,8 @@ import org.apache.olingo.commons.api.edmx.EdmxReference;
 import org.apache.olingo.server.api.ServiceMetadata;
 import org.apache.olingo.server.api.serializer.ODataSerializer;
 import org.apache.olingo.server.api.serializer.SerializerException;
+
+import java.util.List;
 
 public class ServiceDocumentXmlSerializer {
   private static final String APP = "app";
@@ -62,6 +65,15 @@ public class ServiceDocumentXmlSerializer {
     writer.writeNamespace(ATOM, NS_ATOM);
     writer.writeNamespace(APP, NS_APP);
     writer.writeNamespace(METADATA, NS_METADATA);
+
+    if (metadata != null) {
+      List<CustomNamespace> customNamespaces = metadata.getCustomNamespaces();
+      if (customNamespaces != null && !customNamespaces.isEmpty()) {
+        for (CustomNamespace customNamespace : customNamespaces) {
+          writer.writeNamespace(customNamespace.getPrefix(), customNamespace.getUri());
+        }
+      }
+    }
     writer.writeAttribute(METADATA, NS_METADATA, Constants.CONTEXT, metadataUri);
 
     if (metadata != null
