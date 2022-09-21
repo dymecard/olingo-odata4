@@ -804,7 +804,7 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
       prefix = DATA;
     }
     if (namespace == null) {
-      prefix = NS_DATA;
+      namespace = NS_DATA;
     }
     writer.writeStartElement(prefix, edmProperty.getName(), namespace);
     if (property == null || property.isNull()) {
