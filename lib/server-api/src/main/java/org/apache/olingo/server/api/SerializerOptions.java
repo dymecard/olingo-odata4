@@ -25,7 +25,7 @@ public interface SerializerOptions {
     /**
      * Get the current include option or the default if none is specified.
      *
-     * @return Include option.
+     * @return Include option. Defaults to `ALL`, which applies no filtering.
      */
     default SerializerInclude getInclude() {
         return SerializerInclude.ALL;
@@ -34,9 +34,18 @@ public interface SerializerOptions {
     /**
      * Whether to include non-standard property prefixes in JSON responses.
      *
-     * @return Whether to include such prefixes.
+     * @return Whether to include such prefixes (defaults to `false`).
      */
     default boolean getJsonPropertyPrefixing() {
+        return false;
+    }
+
+    /**
+     * Whether to include extended custom property support in Atom feeds.
+     *
+     * @return Whether to include such support (defaults to `false`).
+     */
+    default boolean isExtendedCommonPropertiesEnabled() {
         return false;
     }
 

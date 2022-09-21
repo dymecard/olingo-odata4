@@ -483,8 +483,21 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
         writer.writeCharacters(entity.getId().toASCIIString());
         writer.writeEndElement();
       }
-  
-      writerAuthorInfo(entity.getTitle(), writer);
+
+      SerializerOptions serializerOptions = metadata != null
+              ? metadata.getSerializerOptions()
+              : SerializerOptions.defaults();
+      if (serializerOptions.isExtendedCommonPropertiesEnabled()) {
+        writeExtendedCommonProperties(
+          entity.getTitle(),
+          entity.getSummary(),
+          entity.getAuthor(),
+          entity.getLastModified(),
+          writer
+        );
+      } else {
+        writerAuthorInfo(entity.getTitle(), writer);
+      }
   
       if (entity.getId() != null) {
         writer.writeStartElement(NS_ATOM, Constants.ATOM_ELEM_LINK);
@@ -574,6 +587,45 @@ public class ODataXmlSerializer extends AbstractODataSerializer {
 
     writer.writeStartElement(NS_ATOM, "author");
     writer.writeStartElement(NS_ATOM, "name");
+    writer.writeEndElement();
+    writer.writeEndElement();
+  }
+
+  private void writeExtendedCommonProperties(
+      final String title,
+      final String summary,
+      final String author,
+      final Date lastModified,
+      final XMLStreamWriter writer
+  ) throws XMLStreamException {
+    writer.writeStartElement(NS_ATOM, Constants.ATTR_TITLE);
+    if (title != null) {
+      writer.writeCharacters(title);
+    }
+    writer.writeEndElement();
+
+    writer.writeStartElement(NS_ATOM, Constants.ATOM_ELEM_SUMMARY);
+    if (summary != null) {
+      writer.writeCharacters(summary);
+    }
+    writer.writeEndElement();
+
+    writer.writeStartElement(NS_ATOM, Constants.ATOM_ELEM_UPDATED);
+    final Date modified;
+    if (lastModified != null) {
+      modified = lastModified;
+    } else {
+      modified = new Date(System.currentTimeMillis());
+    }
+    writer.writeCharacters(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+            .format(modified));
+    writer.writeEndElement();
+
+    writer.writeStartElement(NS_ATOM, "author");
+    writer.writeStartElement(NS_ATOM, "name");
+    if (author != null) {
+      writer.writeCharacters(author);
+    }
     writer.writeEndElement();
     writer.writeEndElement();
   }

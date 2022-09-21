@@ -19,7 +19,10 @@
 package org.apache.olingo.commons.api.data;
 
 import java.net.URI;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -41,6 +44,9 @@ public class Entity extends Linked {
   private URI mediaContentSource;
   private String mediaContentType;
   private String mediaETag;
+  private String author;
+  private String summary;
+  private Date lastModified;
 
   /**
    * Gets ETag.
@@ -233,6 +239,60 @@ public class Entity extends Linked {
     return mediaContentSource != null;
   }
 
+  /**
+   * Gets the current internal author field.
+   *
+   * @return Author value, or `null` if none is set.
+   */
+  public String getAuthor() {
+    return author;
+  }
+
+  /**
+   * Set the current author field.
+   *
+   * @param author Author name to use.
+   */
+  public void setAuthor(String author) {
+    this.author = author;
+  }
+
+  /**
+   * Gets the current internal summary field.
+   *
+   * @return Summary value, or `null` if none is set.
+   */
+  public String getSummary() {
+    return summary;
+  }
+
+  /**
+   * Set the current summary field.
+   *
+   * @param summary Summary value to use.
+   */
+  public void setSummary(String summary) {
+    this.summary = summary;
+  }
+
+  /**
+   * Gets the current internal last-modified field.
+   *
+   * @return Last modified date value, or `null` if none is set.
+   */
+  public Date getLastModified() {
+    return lastModified;
+  }
+
+  /**
+   * Set the current last-modified field.
+   *
+   * @param lastModified Last-modified date value to use.
+   */
+  public void setLastModified(Date lastModified) {
+    this.lastModified = lastModified;
+  }
+
   @Override
   public boolean equals(final Object o) {
     return super.equals(o)
@@ -271,5 +331,27 @@ public class Entity extends Linked {
   @Override
   public String toString() {
     return properties.toString();
+  }
+
+  @Override
+  public void setCommonProperty(String key, String value) {
+    if ("author".equals(key)) {
+      this.author = value;
+    } else if ("summary".equals(key)) {
+      this.summary = value;
+    } else if ("lastModified".equals(key)) {
+      if (value != null) {
+        // parse as date or fail loudly
+        try {
+          this.lastModified = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(value);
+        } catch (ParseException e) {
+          throw new IllegalArgumentException("Invalid date format for lastModified: " + value);
+        }
+      } else {
+        this.lastModified = null;
+      }
+    } else {
+      super.setCommonProperty(key, value);
+    }
   }
 }
