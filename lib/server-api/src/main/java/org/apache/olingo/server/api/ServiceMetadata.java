@@ -52,4 +52,10 @@ public interface ServiceMetadata {
    * @return metadata ETag support
    */
   ServiceMetadataETagSupport getServiceMetadataETagSupport();
+
+  /**
+   * Gets any specified serializer options, or a set of sensible defaults.
+   * @return global serializer options.
+   */
+  SerializerOptions getSerializerOptions();
 }
